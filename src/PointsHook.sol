@@ -29,7 +29,7 @@ contract PointsHook is BaseHook, ERC1155 {
                 afterInitialize: false,
                 beforeAddLiquidity: false,
                 beforeRemoveLiquidity: false,
-                afterAddLiquidity: false,
+                afterAddLiquidity: true,
                 afterRemoveLiquidity: false,
                 beforeSwap: false,
                 afterSwap: true,
@@ -86,7 +86,7 @@ contract PointsHook is BaseHook, ERC1155 {
         bytes calldata hookData
     ) internal override returns (bytes4, BalanceDelta) {
          // If this is not an ETH-TOKEN pool with this hook attached, ignore
-        if (!key.currency0.isAddressZero()) return (this.afterSwap.selector, delta);
+        if (!key.currency0.isAddressZero()) return (this.afterAddLiquidity.selector, delta);
 
 
         uint256 ethAmountDeposited = uint256(int256(-delta.amount0()));

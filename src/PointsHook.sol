@@ -77,6 +77,28 @@ contract PointsHook is BaseHook, ERC1155 {
         return (this.afterSwap.selector, 0);
     }
 
+    function _afterAddLiquidity(
+        address,
+        PoolKey calldata key,
+        ModifyLiquidityParams calldata,
+        BalanceDelta delta,
+        BalanceDelta,
+        bytes calldata hookData
+    ) internal override returns (bytes4, BalanceDelta) {
+         // If this is not an ETH-TOKEN pool with this hook attached, ignore
+        if (!key.currency0.isAddressZero()) return (this.afterSwap.selector, delta);
+
+
+        uint256 ethAmountDeposited = uint256(int256(-delta.amount0()));
+        uint256 pointsForDeposit = ethAmountDeposited / 5;
+
+        // Mint the points
+        _assignPoints(key.toId(), hookData, pointsForDeposit);
+
+
+        return (this.afterAddLiquidity.selector, delta);
+    }
+
     function _assignPoints(
         PoolId poolId,
         bytes calldata hookData,
